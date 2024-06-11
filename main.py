@@ -1,7 +1,7 @@
 # set title for mp3 file
 import os
 import sys
-from mutagen.id3 import ID3
+from mutagen.id3 import ID3, ID3NoHeaderError
 from mutagen.id3 import TIT2
 
 def set_title_by_dir(dir):
@@ -15,9 +15,12 @@ def set_title_by_dir(dir):
 def set_title_by_file(filename, title=""):
     if title == "":
         title = os.path.splitext(os.path.basename(filename))[0]
-    audio = ID3(filename)
+    try:
+        audio = ID3(filename)
+    except ID3NoHeaderError:
+        audio = ID3()
     audio["TIT2"] = TIT2(text=title)
-    audio.save()
+    audio.save(filename)
     print(filename + ": success")
 
 
